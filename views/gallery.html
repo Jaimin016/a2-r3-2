@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gallery</title>
+</head>
+<body>
+  <h1>Gallery</h1>
+  <div id="image-container"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("/fetch-all")
+        .then(response => response.json())
+        .then(data => {
+          const imageContainer = document.getElementById("image-container");
+          data.forEach(image => {
+            const img = document.createElement("img");
+            img.src = `/uploads/${image}`;
+            img.width = 150;
+            imageContainer.appendChild(img);
+          });
+        })
+        .catch(error => console.error("Error fetching images:", error));
+    });
+  </script>
+</body>
+</html>

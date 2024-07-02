@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gallery Pagination</title>
+  <style>
+    .image-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .image-container img {
+      margin: 5px;
+      width: 150px;
+      height: auto;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .pagination button {
+      margin: 0 5px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gallery Pagination</h1>
+  <div class="image-container" id="image-container"></div>
+  <div class="pagination" id="pagination"></div>
+
+  <script>
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
+    function fetchPage(pageIndex) {
+      fetch(`/fetch-all/pages/${pageIndex}?items_per_page=${itemsPerPage}`)
+        .then(response => response.json())
+        .then(data => {
+          const imageContainer = document.getElementById("image-container");
+          imageContainer.innerHTML = ""; // Clear previous images
+
+          data.files.forEach(file => {
+            const img = document.createElement("img");
+            img.src = file.url;
+            img.alt = file.name;
+            imageContainer.appendChild(img);
+          });
+
+          const pagination = document.getElementById("pagination");
+          pagination.innerHTML = "";
+
+          for (let i = 1; i <= data.totalPages; i++) {
+            const button = document.createElement("button");
+            button.textContent = i;
+            if (i === data.page) {
+              button.disabled = true;
+            } else {
+              button.onclick = () => fetchPage(i);
+            }
+            pagination.appendChild(button);
+          }
+        })
+        .catch(error => console.error("Error fetching page:", error));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchPage(currentPage);
+    });
+  </script>
+</body>
+</html>
